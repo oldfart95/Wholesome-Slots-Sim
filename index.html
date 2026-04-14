@@ -12,27 +12,31 @@
 </head>
 <body>
   <div class="scene">
+    <div class="scene__canopy"></div>
     <div class="scene__mist"></div>
     <div class="scene__vignette"></div>
     <div class="scene__fireflies" aria-hidden="true"></div>
+    <div class="scene__grain"></div>
+    <div class="scene__ambient-particles" id="ambient-particles" aria-hidden="true"></div>
 
     <main class="cabinet-shell">
       <section class="hero-copy">
-        <p class="eyebrow">Moonlit Conservatory Cabinet</p>
+        <p class="eyebrow">Nocturne Conservatory Cabinet</p>
         <h1>Garden of Fortune</h1>
         <p class="hero-copy__lede">
-          An old botanical fortune cabinet hums softly beneath glass lanterns, where clover luck,
-          brass craft, and moonlit leaves turn in quiet anticipation.
+          Beneath ivy glass and amber lanterns, an antique botanical cabinet gathers luck in slow,
+          luminous turns of brass, lacquer, and leafwork.
         </p>
       </section>
 
       <section class="cabinet" aria-label="Garden of Fortune cabinet">
+        <div class="cabinet__top-inlay" aria-hidden="true"></div>
         <div class="cabinet__crown">
           <div class="crown-light crown-light--left"></div>
           <div class="crown-crest">
             <span class="crest-ornament"></span>
             <div class="title-lockup">
-              <p class="title-lockup__subtitle">Botanical Fortune Cabinet</p>
+              <p class="title-lockup__subtitle">Lantern Fortune Cabinet</p>
               <h2>Garden of Fortune</h2>
             </div>
             <span class="crest-ornament"></span>
@@ -57,20 +61,23 @@
             </div>
 
             <div class="filigree-panel filigree-panel--small">
-              <p class="filigree-panel__label">Cabinet Mood</p>
-              <p class="panel-copy">Lantern glass warm, ivy awake, and a hush of drifting pollen in the dark.</p>
+              <p class="filigree-panel__label">Conservatory Air</p>
+              <p class="panel-copy">Warm glass, leaf-shadow lacquer, and a hush of floating pollen under midnight panes.</p>
             </div>
           </div>
 
           <div class="reel-chamber">
             <div class="chamber-bloom chamber-bloom--top"></div>
             <div class="chamber-bloom chamber-bloom--bottom"></div>
+            <div class="reel-effects" id="reel-effects" aria-hidden="true"></div>
 
             <div class="status-ribbon" id="status-ribbon" aria-live="polite">
-              Wind the cabinet and invite a gentle fortune.
+              Brush the brass button and wake the lantern reels.
             </div>
 
             <div class="reel-frame">
+              <div class="frame-rivets frame-rivets--top" aria-hidden="true"></div>
+              <div class="frame-rivets frame-rivets--bottom" aria-hidden="true"></div>
               <div class="glass-sheen"></div>
               <div class="reel-window" id="reel-window">
                 <div class="payline payline--center" aria-hidden="true"></div>
@@ -93,18 +100,25 @@
           <div class="body-column body-column--right">
             <div class="filigree-panel filigree-panel--small">
               <p class="filigree-panel__label">Cabinet Notes</p>
-              <p class="panel-copy">Three brass-guided reels tuned for clover luck, lantern glow, and velvet restraint.</p>
+              <p class="panel-copy">Three brass-guided reels tuned for clover luck, moonleaf hush, and lantern shimmer.</p>
             </div>
 
-            <button class="spin-button" id="spin-button" type="button" aria-label="Spin the reels">
-              <span class="spin-button__glow"></span>
-              <span class="spin-button__text">Spin</span>
-            </button>
+            <div class="control-altar">
+              <div class="control-altar__trim"></div>
+              <button class="spin-button" id="spin-button" type="button" aria-label="Spin the reels">
+                <span class="spin-button__glow"></span>
+                <span class="spin-button__text">Spin</span>
+              </button>
 
-            <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">
-              Sound ready
-            </button>
+              <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">
+                Sound ready
+              </button>
+            </div>
           </div>
+        </div>
+        <div class="cabinet__base" aria-hidden="true">
+          <span class="cabinet__foot"></span>
+          <span class="cabinet__foot"></span>
         </div>
       </section>
     </main>

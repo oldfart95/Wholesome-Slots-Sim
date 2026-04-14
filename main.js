@@ -74,36 +74,42 @@ const SYMBOLS = [
 const REEL_COUNT = 3;
 const STRIP_REPEAT = 5;
 const BASE_RADIANCE = 14;
-const SPIN_DURATION = 1500;
-const STOP_STAGGER = 240;
-const LANDING_BOUNCE = 360;
+const SPIN_DURATION = 1720;
+const STOP_STAGGER = 320;
+const LANDING_BOUNCE = 380;
 const CARD_HEIGHT_REM = 11.5;
 const CARD_GAP_REM = 0.9;
+const AMBIENT_PARTICLE_COUNT = 22;
 
 const appState = {
   radiance: 0,
   spinning: false,
   soundEnabled: false,
   strips: [],
-  displayedSymbols: Array.from({ length: REEL_COUNT }, () => [])
+  displayedSymbols: Array.from({ length: REEL_COUNT }, () => []),
+  audioContext: null
 };
 
 const elements = {
+  cabinet: document.querySelector(".cabinet"),
   reels: document.getElementById("reels"),
   reelWindow: document.getElementById("reel-window"),
+  reelEffects: document.getElementById("reel-effects"),
   spinButton: document.getElementById("spin-button"),
   soundToggle: document.getElementById("sound-toggle"),
   statusRibbon: document.getElementById("status-ribbon"),
   radianceFill: document.getElementById("radiance-fill"),
   fortuneAmount: document.getElementById("fortune-amount"),
   gardenState: document.getElementById("garden-state"),
-  symbolTemplate: document.getElementById("symbol-template")
+  symbolTemplate: document.getElementById("symbol-template"),
+  ambientParticles: document.getElementById("ambient-particles")
 };
 
 initializeCabinet();
 
 function initializeCabinet() {
   buildReels();
+  populateAmbientParticles();
   updateRadiance(BASE_RADIANCE);
   elements.spinButton.addEventListener("click", handleSpin);
   elements.soundToggle.addEventListener("click", toggleSoundState);
@@ -150,10 +156,13 @@ async function handleSpin() {
   }
 
   appState.spinning = true;
+  elements.cabinet.classList.add("is-spinning");
   clearWinningState();
-  setCabinetMessage("The brass guides stir and the garden leans toward fortune...");
+  pulseButton();
+  setCabinetMessage("The brass guides stir and the lantern glass brightens...");
   elements.gardenState.textContent = "Whirring";
   elements.spinButton.disabled = true;
+  playSpinCue();
 
   const results = appState.strips.map((_, reelIndex) => {
     const symbol = weightedPick(SYMBOLS);
@@ -181,6 +190,7 @@ async function handleSpin() {
   applySpinResult(result, centerLine);
 
   appState.spinning = false;
+  elements.cabinet.classList.remove("is-spinning");
   elements.spinButton.disabled = false;
 }
 
@@ -188,6 +198,10 @@ function animateReelStop(stripState, targetIndex, reelIndex) {
   return new Promise((resolve) => {
     const duration = SPIN_DURATION + reelIndex * STOP_STAGGER;
     const targetTranslate = calculateTranslate(targetIndex);
+
+    window.setTimeout(() => {
+      emitReelSparks(reelIndex, 4 + reelIndex);
+    }, Math.max(120, duration - 280));
 
     requestAnimationFrame(() => {
       stripState.strip.style.transition = `transform ${duration}ms cubic-bezier(0.16, 0.78, 0.18, 1)`;
@@ -199,6 +213,7 @@ function animateReelStop(stripState, targetIndex, reelIndex) {
       stripState.reel.classList.add("reel--landed");
       stripState.currentIndex = targetIndex;
       appState.displayedSymbols[reelIndex] = getVisibleWindow(stripState.repeatedSymbols, targetIndex);
+      playStopCue(reelIndex);
 
       window.setTimeout(() => {
         normalizeStripPosition(stripState);
@@ -214,20 +229,26 @@ function applySpinResult(result, centerLine) {
 
   if (result.type === "jackpot") {
     updateRadiance(26);
-    setCabinetMessage(`Garden Blessing: three ${centerLine[0].name} emblems bloom together.`);
+    setCabinetMessage(`Garden Blessing: three ${centerLine[0].name} emblems bloom in unison.`);
     elements.fortuneAmount.textContent = `${result.reward} Fortune`;
     elements.gardenState.textContent = "Lantern Glow";
     flashReelWindow();
+    celebrateCabinet();
+    emitReelSparks(1, 16);
+    playWinCue("jackpot");
   } else if (result.type === "pair") {
     updateRadiance(12);
-    setCabinetMessage(`A near harmony settles in: ${result.label}.`);
+    setCabinetMessage(`A soft harmony settles in: ${result.label}.`);
     elements.fortuneAmount.textContent = `${result.reward} Fortune`;
     elements.gardenState.textContent = "Soft Bloom";
+    emitReelSparks(1, 8);
+    playWinCue("pair");
   } else {
     updateRadiance(-7);
     setCabinetMessage(result.label);
     elements.fortuneAmount.textContent = "Quiet turn";
     elements.gardenState.textContent = "Stillness";
+    playWinCue("miss");
   }
 }
 
@@ -280,10 +301,12 @@ function setCabinetMessage(message) {
 function toggleSoundState() {
   appState.soundEnabled = !appState.soundEnabled;
   elements.soundToggle.setAttribute("aria-pressed", String(appState.soundEnabled));
-  elements.soundToggle.textContent = appState.soundEnabled ? "Sound poised" : "Sound ready";
+  elements.soundToggle.textContent = appState.soundEnabled ? "Sound aglow" : "Sound ready";
+  ensureAudioContext();
+  playTone({ frequency: appState.soundEnabled ? 520 : 300, duration: 0.08, type: "sine", volume: 0.018 });
   setCabinetMessage(appState.soundEnabled
-    ? "Generated brass clicks and lantern chimes can be layered in next."
-    : "Sound hooks remain ready for wood, brass, and glass cues.");
+    ? "The cabinet murmurs with soft brass clicks and lantern chimes."
+    : "The cabinet falls back to lantern hush; sound hooks remain ready.");
 }
 
 function clearWinningState() {
@@ -396,6 +419,60 @@ function normalizeStripPosition(stripState) {
   });
 }
 
+function populateAmbientParticles() {
+  const fragment = document.createDocumentFragment();
+
+  for (let index = 0; index < AMBIENT_PARTICLE_COUNT; index += 1) {
+    const particle = document.createElement("span");
+    particle.className = "ambient-particle";
+    particle.style.left = `${Math.random() * 100}%`;
+    particle.style.bottom = `${-10 - Math.random() * 35}%`;
+    particle.style.setProperty("--duration", `${14 + Math.random() * 18}s`);
+    particle.style.setProperty("--delay", `${-Math.random() * 18}s`);
+    particle.style.setProperty("--drift-x", `${(Math.random() * 7 - 3.5).toFixed(2)}rem`);
+    particle.style.width = `${0.18 + Math.random() * 0.38}rem`;
+    particle.style.height = particle.style.width;
+    fragment.appendChild(particle);
+  }
+
+  elements.ambientParticles.replaceChildren(fragment);
+}
+
+function emitReelSparks(reelIndex, count) {
+  const reelCenter = ((reelIndex + 0.5) / REEL_COUNT) * 100;
+
+  for (let index = 0; index < count; index += 1) {
+    const spark = document.createElement("span");
+    spark.className = "reel-spark";
+    spark.style.left = `${reelCenter + (Math.random() * 14 - 7)}%`;
+    spark.style.bottom = `${12 + Math.random() * 18}%`;
+    spark.style.setProperty("--spark-drift", `${(Math.random() * 2.8 - 1.4).toFixed(2)}rem`);
+    spark.style.animationDelay = `${index * 18}ms`;
+    elements.reelEffects.appendChild(spark);
+    window.setTimeout(() => spark.remove(), 980);
+  }
+}
+
+function pulseButton() {
+  elements.spinButton.animate(
+    [
+      { transform: "translateY(0) scale(1)" },
+      { transform: "translateY(2px) scale(0.986)" },
+      { transform: "translateY(0) scale(1)" }
+    ],
+    { duration: 240, easing: "ease-out" }
+  );
+}
+
+function celebrateCabinet() {
+  elements.cabinet.classList.remove("is-celebrating");
+  void elements.cabinet.offsetWidth;
+  elements.cabinet.classList.add("is-celebrating");
+  window.setTimeout(() => {
+    elements.cabinet.classList.remove("is-celebrating");
+  }, 1240);
+}
+
 function createSymbolCard(symbol) {
   const fragment = elements.symbolTemplate.content.cloneNode(true);
   const card = fragment.querySelector(".symbol-card");
@@ -422,6 +499,79 @@ function createSvg(viewBox, content) {
   svg.setAttribute("aria-hidden", "true");
   svg.innerHTML = content.trim();
   return svg;
+}
+
+function ensureAudioContext() {
+  if (!appState.soundEnabled) {
+    return null;
+  }
+
+  if (!appState.audioContext) {
+    const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextCtor) {
+      return null;
+    }
+    appState.audioContext = new AudioContextCtor();
+  }
+
+  if (appState.audioContext.state === "suspended") {
+    appState.audioContext.resume();
+  }
+
+  return appState.audioContext;
+}
+
+function playTone({ frequency, duration, type = "sine", volume = 0.03, delay = 0, attack = 0.01, release = 0.12 }) {
+  const context = ensureAudioContext();
+  if (!context) {
+    return;
+  }
+
+  const start = context.currentTime + delay;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, start);
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(volume, start + attack);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration + release);
+
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(start);
+  oscillator.stop(start + duration + release + 0.02);
+}
+
+function playSpinCue() {
+  playTone({ frequency: 180, duration: 0.08, type: "triangle", volume: 0.028 });
+  playTone({ frequency: 310, duration: 0.06, type: "sine", volume: 0.018, delay: 0.04 });
+}
+
+function playStopCue(reelIndex) {
+  playTone({
+    frequency: 300 + reelIndex * 36,
+    duration: 0.05,
+    type: "triangle",
+    volume: 0.022 + reelIndex * 0.003
+  });
+}
+
+function playWinCue(resultType) {
+  if (resultType === "jackpot") {
+    playTone({ frequency: 440, duration: 0.12, type: "sine", volume: 0.03 });
+    playTone({ frequency: 554, duration: 0.16, type: "sine", volume: 0.028, delay: 0.08 });
+    playTone({ frequency: 660, duration: 0.22, type: "triangle", volume: 0.022, delay: 0.18 });
+    return;
+  }
+
+  if (resultType === "pair") {
+    playTone({ frequency: 392, duration: 0.1, type: "sine", volume: 0.024 });
+    playTone({ frequency: 494, duration: 0.14, type: "triangle", volume: 0.018, delay: 0.07 });
+    return;
+  }
+
+  playTone({ frequency: 220, duration: 0.07, type: "triangle", volume: 0.012 });
 }
 
 function createCloverSvg(palette, uid) {

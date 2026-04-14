@@ -26,8 +26,8 @@ Because this prototype uses plain `index.html`, `styles.css`, and `main.js`, it 
 
 1. Push the repository to GitHub.
 2. In the repository settings, open `Pages`.
-3. Set the source to deploy from your main branch root, or `/docs` if you later choose to move the files there.
-4. Save, then wait for the Pages build to publish.
+3. Set the source to `GitHub Actions`.
+4. The included workflow at `.github/workflows/deploy-pages.yml` will deploy the site automatically on pushes to `main`.
 
 ## Architecture
 
