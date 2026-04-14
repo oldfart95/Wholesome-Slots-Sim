@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#254d39"/>
+      <stop offset="100%" stop-color="#10251d"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#edf7c5" stop-opacity=".95"/>
+      <stop offset="45%" stop-color="#a7cf67" stop-opacity=".45"/>
+      <stop offset="100%" stop-color="#0f1f17" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="leaf" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ecf7cb"/>
+      <stop offset="100%" stop-color="#87bd53"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="232" height="232" rx="52" fill="url(#bg)"/>
+  <circle cx="128" cy="120" r="86" fill="url(#halo)"/>
+  <g fill="url(#leaf)" stroke="#48773c" stroke-width="8" stroke-linejoin="round">
+    <path d="M128 56c18 0 32 14 32 32s-14 32-32 48c-18-16-32-30-32-48s14-32 32-32Z"/>
+    <path d="M68 110c18 0 32 14 48 32-16 18-30 32-48 32s-32-14-32-32 14-32 32-32Z"/>
+    <path d="M188 110c18 0 32 14 32 32s-14 32-32 32-32-14-48-32c16-18 30-32 48-32Z"/>
+    <path d="M128 148c18 16 32 30 32 48s-14 32-32 32-32-14-32-32 14-32 32-48Z"/>
+  </g>
+  <path d="M128 146c0 34-2 48-18 64" fill="none" stroke="#4b7439" stroke-linecap="round" stroke-width="10"/>
+  <rect x="22" y="22" width="212" height="212" rx="42" fill="none" stroke="#f0d68a" stroke-opacity=".35" stroke-width="4"/>
+</svg>

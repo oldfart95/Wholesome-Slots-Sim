@@ -19,7 +19,19 @@
     <div class="scene__grain"></div>
     <div class="scene__ambient-particles" id="ambient-particles" aria-hidden="true"></div>
 
-    <main class="cabinet-shell">
+    <div class="start-sequence" id="start-sequence" aria-live="polite">
+      <div class="start-sequence__veil"></div>
+      <div class="start-sequence__panel">
+        <p class="start-sequence__eyebrow">Conservatory Nocturne</p>
+        <h1 class="start-sequence__title">Garden of Fortune</h1>
+        <p class="start-sequence__copy">
+          Lanterns gather, lacquer deepens, and the cabinet waits for a ceremonial first turn.
+        </p>
+        <button class="start-sequence__button" id="start-button" type="button">Wake the Cabinet</button>
+      </div>
+    </div>
+
+    <main class="cabinet-shell cabinet-shell--sleeping" id="cabinet-shell">
       <section class="hero-copy">
         <p class="eyebrow">Nocturne Conservatory Cabinet</p>
         <h1>Garden of Fortune</h1>
@@ -80,6 +92,7 @@
               <div class="frame-rivets frame-rivets--bottom" aria-hidden="true"></div>
               <div class="glass-sheen"></div>
               <div class="reel-window" id="reel-window">
+                <div class="reel-texture"></div>
                 <div class="payline payline--center" aria-hidden="true"></div>
                 <div class="reels" id="reels" aria-label="Three spinning botanical reels"></div>
               </div>

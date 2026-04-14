@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 800" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="veil" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.12)"/>
+      <stop offset="16%" stop-color="rgba(255,255,255,0)"/>
+      <stop offset="84%" stop-color="rgba(255,255,255,0)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.38)"/>
+    </linearGradient>
+    <pattern id="grain" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M4 10c12-4 20-4 32 0M0 24c16-6 24-6 40 0M6 36c10-3 18-3 30 0" fill="none" stroke="rgba(217,188,110,0.08)" stroke-width="1.2" stroke-linecap="round"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="800" fill="url(#veil)"/>
+  <rect width="400" height="800" fill="url(#grain)"/>
+</svg>

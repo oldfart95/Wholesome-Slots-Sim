@@ -6,6 +6,7 @@ const SYMBOLS = [
     tier: "common",
     payout3: 12,
     glow: "rgba(177, 227, 132, 0.34)",
+    assetPath: "assets/symbols/clover-medallion.svg",
     palette: { primary: "#9bd071", secondary: "#ebf6cb", accent: "#5f8f39" },
     render: createCloverSvg
   },
@@ -16,6 +17,7 @@ const SYMBOLS = [
     tier: "rare",
     payout3: 28,
     glow: "rgba(245, 214, 124, 0.34)",
+    assetPath: "assets/symbols/lantern-medallion.svg",
     palette: { primary: "#e1b85f", secondary: "#fff0bd", accent: "#7a5b25" },
     render: createLanternSvg
   },
@@ -26,6 +28,7 @@ const SYMBOLS = [
     tier: "uncommon",
     payout3: 18,
     glow: "rgba(110, 184, 121, 0.28)",
+    assetPath: "assets/symbols/ivy-knot-medallion.svg",
     palette: { primary: "#6ab47c", secondary: "#d9f0d8", accent: "#2d6c47" },
     render: createIvyKnotSvg
   },
@@ -36,6 +39,7 @@ const SYMBOLS = [
     tier: "uncommon",
     payout3: 20,
     glow: "rgba(243, 190, 173, 0.28)",
+    assetPath: "assets/symbols/blossom-medallion.svg",
     palette: { primary: "#f0b7a0", secondary: "#fff0eb", accent: "#c97a66" },
     render: createBlossomSvg
   },
@@ -46,6 +50,7 @@ const SYMBOLS = [
     tier: "rare",
     payout3: 36,
     glow: "rgba(247, 214, 121, 0.38)",
+    assetPath: "assets/symbols/golden-key-medallion.svg",
     palette: { primary: "#f0cd6d", secondary: "#fff1bc", accent: "#87662a" },
     render: createKeySvg
   },
@@ -56,6 +61,7 @@ const SYMBOLS = [
     tier: "common",
     payout3: 14,
     glow: "rgba(146, 223, 240, 0.3)",
+    assetPath: "assets/symbols/dew-drop-medallion.svg",
     palette: { primary: "#8cd7e8", secondary: "#e8ffff", accent: "#4f97ab" },
     render: createDewSvg
   },
@@ -66,6 +72,7 @@ const SYMBOLS = [
     tier: "rare",
     payout3: 30,
     glow: "rgba(196, 223, 145, 0.3)",
+    assetPath: "assets/symbols/moonleaf-medallion.svg",
     palette: { primary: "#b9d37a", secondary: "#f7ffd8", accent: "#6f8d35" },
     render: createMoonleafSvg
   }
@@ -84,6 +91,7 @@ const AMBIENT_PARTICLE_COUNT = 22;
 const appState = {
   radiance: 0,
   spinning: false,
+  awakened: false,
   soundEnabled: false,
   strips: [],
   displayedSymbols: Array.from({ length: REEL_COUNT }, () => []),
@@ -91,6 +99,9 @@ const appState = {
 };
 
 const elements = {
+  cabinetShell: document.getElementById("cabinet-shell"),
+  startSequence: document.getElementById("start-sequence"),
+  startButton: document.getElementById("start-button"),
   cabinet: document.querySelector(".cabinet"),
   reels: document.getElementById("reels"),
   reelWindow: document.getElementById("reel-window"),
@@ -111,6 +122,8 @@ function initializeCabinet() {
   buildReels();
   populateAmbientParticles();
   updateRadiance(BASE_RADIANCE);
+  elements.spinButton.disabled = true;
+  elements.startButton.addEventListener("click", awakenCabinet);
   elements.spinButton.addEventListener("click", handleSpin);
   elements.soundToggle.addEventListener("click", toggleSoundState);
 }
@@ -150,8 +163,32 @@ function buildReels() {
   });
 }
 
+function awakenCabinet() {
+  if (appState.awakened) {
+    return;
+  }
+
+  appState.awakened = true;
+  elements.startSequence.classList.add("is-hidden");
+  elements.cabinetShell.classList.remove("cabinet-shell--sleeping");
+  elements.cabinetShell.classList.add("is-awakening");
+  elements.spinButton.disabled = false;
+  setCabinetMessage("Lanterns rise in the glass, and the cabinet answers your hand.");
+  elements.gardenState.textContent = "Awakening";
+  updateRadiance(10);
+  playTone({ frequency: 262, duration: 0.16, type: "sine", volume: 0.016 });
+  playTone({ frequency: 392, duration: 0.22, type: "triangle", volume: 0.018, delay: 0.12 });
+  emitReelSparks(1, 10);
+
+  window.setTimeout(() => {
+    elements.cabinetShell.classList.remove("is-awakening");
+    setCabinetMessage("The cabinet is awake. Brush the brass button for the first ceremonial turn.");
+    elements.gardenState.textContent = "Ready";
+  }, 1700);
+}
+
 async function handleSpin() {
-  if (appState.spinning) {
+  if (appState.spinning || !appState.awakened) {
     return;
   }
 
@@ -227,7 +264,16 @@ function animateReelStop(stripState, targetIndex, reelIndex) {
 function applySpinResult(result, centerLine) {
   highlightWinningSymbols(result, centerLine);
 
-  if (result.type === "jackpot") {
+  if (result.type === "blessing") {
+    updateRadiance(20);
+    setCabinetMessage(`${result.title}: ${result.label}.`);
+    elements.fortuneAmount.textContent = `${result.reward} Fortune`;
+    elements.gardenState.textContent = result.title;
+    flashReelWindow();
+    celebrateCabinet();
+    emitReelSparks(1, 14);
+    playWinCue("jackpot");
+  } else if (result.type === "jackpot") {
     updateRadiance(26);
     setCabinetMessage(`Garden Blessing: three ${centerLine[0].name} emblems bloom in unison.`);
     elements.fortuneAmount.textContent = `${result.reward} Fortune`;
@@ -254,6 +300,35 @@ function applySpinResult(result, centerLine) {
 
 function evaluateSpin(centerLine) {
   const [first, second, third] = centerLine;
+  const ids = centerLine.map((symbol) => symbol.id);
+  const rareCount = centerLine.filter((symbol) => symbol.tier === "rare").length;
+
+  if (ids.includes("lantern") && ids.includes("golden-key")) {
+    return {
+      type: "blessing",
+      reward: 22,
+      title: "Lantern Blessing",
+      label: "lantern light finds the hidden keyway"
+    };
+  }
+
+  if (ids.includes("moonleaf") && ids.includes("dew-drop") && ids.includes("clover")) {
+    return {
+      type: "blessing",
+      reward: 20,
+      title: "Moonleaf Concord",
+      label: "moonlit leaf, dew, and clover weave a silver omen"
+    };
+  }
+
+  if (ids.filter((id) => id === "clover").length === 2 && ids.includes("ivy-knot")) {
+    return {
+      type: "blessing",
+      reward: 18,
+      title: "Clover Weave",
+      label: "twin clovers are bound by ivy into a favored knot"
+    };
+  }
 
   if (first.id === second.id && second.id === third.id) {
     return {
@@ -272,7 +347,6 @@ function evaluateSpin(centerLine) {
     };
   }
 
-  const rareCount = centerLine.filter((symbol) => symbol.tier === "rare").length;
   if (rareCount >= 2) {
     return {
       type: "pair",
@@ -336,7 +410,7 @@ function highlightWinningSymbols(result, centerLine) {
 }
 
 function shouldHighlight(result, centerLine, reelSymbol) {
-  if (result.type === "jackpot") {
+  if (result.type === "jackpot" || result.type === "blessing") {
     return true;
   }
 
@@ -479,10 +553,19 @@ function createSymbolCard(symbol) {
   const inner = fragment.querySelector(".symbol-card__inner");
   const art = fragment.querySelector(".symbol-card__art");
   const name = fragment.querySelector(".symbol-card__name");
-  const uid = `${symbol.id}-${Math.random().toString(36).slice(2, 8)}`;
 
   inner.style.setProperty("--symbol-glow", symbol.glow);
-  art.appendChild(symbol.render(symbol.palette, uid));
+  if (symbol.assetPath) {
+    const image = document.createElement("img");
+    image.src = symbol.assetPath;
+    image.alt = "";
+    image.loading = "eager";
+    image.decoding = "async";
+    art.appendChild(image);
+  } else {
+    const uid = `${symbol.id}-${Math.random().toString(36).slice(2, 8)}`;
+    art.appendChild(symbol.render(symbol.palette, uid));
+  }
   name.textContent = symbol.name;
   card.dataset.symbolId = symbol.id;
 
