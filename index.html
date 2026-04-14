@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Garden of Fortune, a luxurious botanical reel cabinet prototype.">
+  <title>Garden of Fortune</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="scene">
+    <div class="scene__mist"></div>
+    <div class="scene__vignette"></div>
+    <div class="scene__fireflies" aria-hidden="true"></div>
+
+    <main class="cabinet-shell">
+      <section class="hero-copy">
+        <p class="eyebrow">Moonlit Conservatory Cabinet</p>
+        <h1>Garden of Fortune</h1>
+        <p class="hero-copy__lede">
+          An old botanical fortune cabinet hums softly beneath glass lanterns, where clover luck,
+          brass craft, and moonlit leaves turn in quiet anticipation.
+        </p>
+      </section>
+
+      <section class="cabinet" aria-label="Garden of Fortune cabinet">
+        <div class="cabinet__crown">
+          <div class="crown-light crown-light--left"></div>
+          <div class="crown-crest">
+            <span class="crest-ornament"></span>
+            <div class="title-lockup">
+              <p class="title-lockup__subtitle">Botanical Fortune Cabinet</p>
+              <h2>Garden of Fortune</h2>
+            </div>
+            <span class="crest-ornament"></span>
+          </div>
+          <div class="crown-light crown-light--right"></div>
+        </div>
+
+        <div class="cabinet__body">
+          <div class="body-column body-column--left">
+            <div class="filigree-panel">
+              <p class="filigree-panel__label">Radiance</p>
+              <div class="meter" aria-label="Radiance meter">
+                <div class="meter__track">
+                  <div class="meter__fill" id="radiance-fill"></div>
+                </div>
+                <div class="meter__markers">
+                  <span>Seed</span>
+                  <span>Bloom</span>
+                  <span>Glow</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="filigree-panel filigree-panel--small">
+              <p class="filigree-panel__label">Cabinet Mood</p>
+              <p class="panel-copy">Lantern glass warm, ivy awake, and a hush of drifting pollen in the dark.</p>
+            </div>
+          </div>
+
+          <div class="reel-chamber">
+            <div class="chamber-bloom chamber-bloom--top"></div>
+            <div class="chamber-bloom chamber-bloom--bottom"></div>
+
+            <div class="status-ribbon" id="status-ribbon" aria-live="polite">
+              Wind the cabinet and invite a gentle fortune.
+            </div>
+
+            <div class="reel-frame">
+              <div class="glass-sheen"></div>
+              <div class="reel-window" id="reel-window">
+                <div class="payline payline--center" aria-hidden="true"></div>
+                <div class="reels" id="reels" aria-label="Three spinning botanical reels"></div>
+              </div>
+            </div>
+
+            <div class="footer-panel">
+              <div class="fortune-readout">
+                <span class="fortune-readout__label">Last Fortune</span>
+                <strong id="fortune-amount">None yet</strong>
+              </div>
+              <div class="fortune-readout">
+                <span class="fortune-readout__label">Garden State</span>
+                <strong id="garden-state">Stillness</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="body-column body-column--right">
+            <div class="filigree-panel filigree-panel--small">
+              <p class="filigree-panel__label">Cabinet Notes</p>
+              <p class="panel-copy">Three brass-guided reels tuned for clover luck, lantern glow, and velvet restraint.</p>
+            </div>
+
+            <button class="spin-button" id="spin-button" type="button" aria-label="Spin the reels">
+              <span class="spin-button__glow"></span>
+              <span class="spin-button__text">Spin</span>
+            </button>
+
+            <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false">
+              Sound ready
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="symbol-template">
+    <div class="symbol-card">
+      <div class="symbol-card__frame">
+        <div class="symbol-card__inner">
+          <div class="symbol-card__glow"></div>
+          <div class="symbol-card__art"></div>
+          <div class="symbol-card__name"></div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script src="main.js"></script>
+</body>
+</html>
