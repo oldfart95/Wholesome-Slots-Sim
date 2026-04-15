@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#254d39"/>
+      <stop offset="100%" stop-color="#10251d"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#fff2bd" stop-opacity=".9"/>
+      <stop offset="45%" stop-color="#bddc89" stop-opacity=".42"/>
+      <stop offset="100%" stop-color="#0f1f17" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="feather" x1="0" x2="1">
+      <stop offset="0%" stop-color="#fff1b4"/>
+      <stop offset="100%" stop-color="#80b768"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="12" width="232" height="232" rx="52" fill="url(#bg)"/>
+  <circle cx="128" cy="120" r="86" fill="url(#halo)"/>
+  <path d="M70 151c32-50 79-70 128-49-12 16-28 28-47 35 13 7 25 18 34 34-28 6-57 1-84-16-11 9-22 15-31 18-8 3-12-10 0-22Z" fill="url(#feather)" stroke="#4d7439" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M82 143c-11-17-28-24-48-20 8 19 23 32 46 38" fill="#ebc46e" stroke="#7c5920" stroke-width="7" stroke-linejoin="round"/>
+  <circle cx="178" cy="102" r="8" fill="#112019"/>
+  <path d="M200 98l23 8-23 13" fill="#d39b38" stroke="#7c5920" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M105 154c27-2 55-15 79-39" fill="none" stroke="#fff1b4" stroke-width="7" stroke-linecap="round" opacity=".65"/>
+  <rect x="22" y="22" width="212" height="212" rx="42" fill="none" stroke="#f0d68a" stroke-opacity=".35" stroke-width="4"/>
+</svg>
